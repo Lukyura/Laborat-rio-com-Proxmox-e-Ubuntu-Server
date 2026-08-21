@@ -1,300 +1,537 @@
-# Laboratório Proxmox VE + Ubuntu Server
+# Proxmox VE + Ubuntu Server Lab
 
-Projeto prático de infraestrutura desenvolvido com o objetivo de estudar **virtualização, administração de servidores Linux, redes e acesso remoto**, utilizando o **Proxmox VE** como hypervisor e o **Ubuntu Server** como máquina virtual.
+Laboratório prático de **virtualização e infraestrutura**, desenvolvido para estudar a instalação e administração do **Proxmox VE**, criação de máquinas virtuais, configuração de rede e instalação de um servidor Linux.
+
+O ambiente foi construído utilizando **virtualização aninhada**, com o Proxmox VE executado dentro do VirtualBox e uma máquina virtual Ubuntu Server criada posteriormente dentro do próprio Proxmox.
+
+> 🚧 **Projeto em desenvolvimento:** o ambiente virtualizado está funcional, porém a conectividade do Ubuntu Server com a Internet ainda está pendente de configuração.
 
 ---
 
 ## Objetivo
 
-O objetivo deste projeto foi montar um ambiente virtualizado utilizando o Proxmox VE e configurar uma máquina virtual com Ubuntu Server, aplicando na prática conceitos relacionados a:
+O objetivo deste projeto foi sair da parte puramente teórica e montar um pequeno laboratório para praticar conceitos relacionados a:
 
 * Virtualização
-* Administração de servidores Linux
+* Hypervisores
+* Proxmox VE
+* Linux
+* Ubuntu Server
 * Redes
-* SSH
-* Testes de conectividade
-* Verificação de portas e serviços
+* Bridges de rede
+* Administração de máquinas virtuais
 * Troubleshooting
+
+Além da instalação do ambiente, o projeto também envolveu a resolução de problemas encontrados durante a configuração.
+
+---
+
+## Arquitetura do laboratório
+
+O laboratório utiliza virtualização aninhada:
+
+```text
+Windows Host
+    │
+    ▼
+VirtualBox
+    │
+    ▼
+Proxmox VE 9.2
+    │
+    └── VM 100
+         │
+         ▼
+    Ubuntu Server
+```
+
+Ou seja, o **Proxmox VE não está instalado diretamente em hardware físico**.
+
+Ele funciona como uma máquina virtual dentro do VirtualBox exclusivamente para fins de estudo e laboratório.
 
 ---
 
 ## Tecnologias utilizadas
 
-* Proxmox VE
+* Proxmox VE 9.2
+* VirtualBox
 * Ubuntu Server
 * Linux
-* SSH
+* Virtualização aninhada
+* Bridge de rede
+* VirtIO
 * TCP/IP
-* Virtualização
-* Interface Web
-* Terminal Linux
+* Interface Web do Proxmox
 
 ---
 
-## Arquitetura do ambiente
+# Desenvolvimento do laboratório
 
-```text
-Máquina Host
-     │
-     ▼
-┌─────────────────┐
-│   Proxmox VE    │
-│   Hypervisor    │
-└────────┬────────┘
-         │
-         │ Máquina Virtual
-         ▼
-┌─────────────────┐
-│  Ubuntu Server  │
-│                 │
-│       SSH       │
-│   Serviços      │
-└─────────────────┘
-```
+## 1. Criação da VM do Proxmox
 
----
+Inicialmente foi criada uma máquina virtual no VirtualBox para receber a instalação do Proxmox VE.
 
-## Implementação
-
-### Instalação e configuração do Proxmox VE
-
-Foi realizada a instalação do **Proxmox VE**, utilizado como plataforma de virtualização do laboratório.
-
-Após a configuração inicial, o ambiente passou a ser administrado através da interface Web do Proxmox.
-
-A interface pode ser acessada utilizando:
-
-```text
-https://IP_DO_PROXMOX:8006
-```
-
-Através do painel foi possível realizar tarefas como:
-
-* Criação de máquinas virtuais
-* Gerenciamento de CPU e memória
-* Configuração de armazenamento
-* Configuração de rede
-* Acesso ao console das máquinas virtuais
-* Gerenciamento do ambiente virtualizado
-
----
-
-## Criação da máquina virtual
-
-Dentro do Proxmox foi criada uma máquina virtual destinada ao **Ubuntu Server**.
-
-Durante a criação da VM foram configurados recursos como:
+Durante essa etapa foi necessário configurar recursos como:
 
 * CPU
 * Memória RAM
-* Armazenamento
+* Disco virtual
 * Interface de rede
-* Imagem ISO do Ubuntu Server
-
-Após a configuração dos recursos, o sistema operacional foi instalado normalmente dentro da máquina virtual.
-
----
-
-## Ubuntu Server
-
-Após a instalação, o Ubuntu Server ficou operacional dentro do ambiente Proxmox.
-
-A máquina virtual foi utilizada para praticar conceitos de administração Linux e redes, incluindo:
-
-* Utilização do terminal
-* Configuração de rede
-* Identificação do endereço IP
-* Comunicação entre dispositivos
-* Administração remota
-* Verificação de portas e serviços
+* ISO do Proxmox VE
+* Virtualização aninhada
 
 ---
 
-## Testes realizados
+## 2. Instalação do Proxmox VE
 
-### Teste de conectividade
+Após a criação da máquina virtual, foi realizada a instalação do **Proxmox VE 9.2**.
 
-Foi utilizado o comando `ping` para verificar a comunicação entre as máquinas do laboratório.
+Depois da instalação, o Proxmox passou a ser administrado principalmente através de sua interface Web.
 
-```bash
-ping IP_DO_SERVIDOR
-```
-
-O teste confirmou que havia comunicação entre os dispositivos presentes na rede local.
-
-**Resultado:** conectividade local funcionando.
-
----
-
-### Acesso ao Proxmox pelo navegador
-
-A interface administrativa do Proxmox foi acessada através do navegador utilizando a porta padrão:
+O endereço configurado no laboratório foi:
 
 ```text
-8006
+https://192.168.1.200:8006
 ```
 
-Exemplo:
+Configuração utilizada:
 
 ```text
-https://192.168.x.x:8006
+IP:      192.168.1.200
+Gateway: 192.168.1.1
+Porta:   8006
 ```
-
-**Resultado:** painel Web acessível pela rede.
 
 ---
 
-### Acesso remoto utilizando SSH
+## 3. Configuração da rede
 
-O Ubuntu Server foi acessado remotamente utilizando o protocolo SSH.
+Uma das principais etapas do laboratório foi a configuração de rede.
 
-Exemplo:
-
-```bash
-ssh usuario@IP_DO_SERVIDOR
-```
-
-Esse teste permitiu administrar o servidor através de outra máquina da rede.
-
-**Resultado:** acesso remoto via SSH funcionando.
-
----
-
-### Verificação de portas
-
-Também foram realizados testes para verificar quais portas estavam disponíveis no servidor.
-
-Essa etapa foi utilizada para compreender melhor a relação entre:
+Inicialmente, o Proxmox estava utilizando uma interface configurada em **NAT pelo VirtualBox**, recebendo um endereço da rede:
 
 ```text
-Serviço → Porta → Protocolo → Comunicação
+10.0.2.x
 ```
 
-A verificação das portas permitiu validar os serviços disponíveis na máquina virtual.
+Essa configuração limitava a comunicação desejada entre o laboratório e a rede local.
+
+Posteriormente, a configuração do VirtualBox foi alterada para utilizar **Bridge**, permitindo que o Proxmox participasse diretamente da mesma rede do computador host.
+
+Após a alteração, foi utilizado:
+
+```text
+192.168.1.200
+```
+
+como endereço do Proxmox.
 
 ---
 
-## Resultados
+## Bridge do Proxmox
 
-Durante o desenvolvimento do projeto foram concluídas as seguintes etapas:
+Dentro do Proxmox, a bridge utilizada pelas máquinas virtuais foi:
 
-* [x] Instalação do Proxmox VE
-* [x] Configuração inicial do Proxmox
-* [x] Acesso ao painel Web
-* [x] Criação de máquina virtual
-* [x] Instalação do Ubuntu Server
-* [x] Inicialização e configuração básica do servidor
-* [x] Comunicação entre as máquinas
-* [x] Testes utilizando Ping
-* [x] Acesso remoto utilizando SSH
-* [x] Verificação de portas abertas
-* [ ] Configuração de acesso à Internet no Ubuntu Server
+```text
+vmbr0
+```
+
+Ela permite conectar as interfaces virtuais das VMs à infraestrutura de rede configurada no host Proxmox.
+
+A VM Ubuntu Server também foi associada à:
+
+```text
+vmbr0
+```
 
 ---
 
-## Problema encontrado
+# Problemas encontrados e troubleshooting
 
-Durante a configuração do laboratório, a máquina virtual Ubuntu Server conseguiu estabelecer comunicação dentro da rede local, porém ainda não foi possível concluir o acesso à Internet.
+Uma parte importante deste laboratório foi justamente lidar com erros reais durante a configuração.
 
-A conectividade local funciona normalmente, inclusive permitindo acesso remoto por SSH.
+---
 
-O troubleshooting desse problema será realizado analisando principalmente:
+## Problema 1 — Proxmox inacessível pela rede
 
-* Configuração da interface de rede
-* Endereço IP
-* Gateway padrão
-* DNS
-* Bridge de rede do Proxmox
-* Rotas de rede
-* Configuração do Ubuntu Server
+### Situação
 
-Alguns comandos que podem ser utilizados durante o diagnóstico:
+Inicialmente, o Proxmox estava utilizando NAT no VirtualBox e recebeu um endereço semelhante a:
+
+```text
+10.0.2.15
+```
+
+Isso dificultava o acesso ao ambiente a partir da rede local.
+
+### Solução
+
+A interface de rede da VM no VirtualBox foi alterada de:
+
+```text
+NAT
+```
+
+para:
+
+```text
+Bridge
+```
+
+Depois disso, o Proxmox passou a utilizar um endereço da mesma rede do computador host:
+
+```text
+192.168.1.200
+```
+
+Com isso, a interface Web passou a ser acessível através do navegador.
+
+---
+
+## Problema 2 — Referências ao endereço IP antigo
+
+Após a alteração da configuração de rede, algumas referências ao endereço anterior ainda permaneceram no sistema.
+
+Foram verificadas configurações como:
 
 ```bash
-ip addr
+/etc/hosts
 ```
+
+e:
+
+```bash
+/etc/issue
+```
+
+para remover ou atualizar referências relacionadas ao endereço antigo.
+
+Essa etapa ajudou a manter a configuração do ambiente consistente com o novo endereço IP.
+
+---
+
+## Problema 3 — KVM indisponível
+
+Durante a criação da máquina virtual dentro do Proxmox, foi encontrado um problema relacionado ao **KVM**.
+
+Como o Proxmox já estava sendo executado dentro do VirtualBox, era necessário permitir que ele tivesse acesso aos recursos de virtualização do processador físico.
+
+### Solução
+
+Foi habilitado o recurso de **Nested VT-x/AMD-V** no VirtualBox.
+
+Isso permitiu utilizar virtualização aninhada:
+
+```text
+CPU física
+    ↓
+VirtualBox
+    ↓
+Proxmox
+    ↓
+Ubuntu Server
+```
+
+Depois dessa alteração, foi possível continuar a criação e inicialização da VM.
+
+---
+
+## Problema 4 — VM bloqueada
+
+Durante os testes com a máquina virtual, ocorreu uma situação em que a VM ficou bloqueada.
+
+Foi utilizado o comando:
+
+```bash
+qm unlock 100
+```
+
+onde:
+
+```text
+100
+```
+
+corresponde ao ID da máquina virtual Ubuntu Server.
+
+Isso permitiu desbloquear a VM e continuar sua administração pelo Proxmox.
+
+---
+
+## Problema 5 — Boot utilizando a ISO
+
+Após concluir a instalação do Ubuntu Server, foi necessário ajustar o boot da máquina virtual.
+
+A ISO utilizada durante a instalação ainda estava associada à VM.
+
+Ela foi removida/desconectada para que a máquina passasse a iniciar diretamente pelo disco virtual onde o Ubuntu Server havia sido instalado.
+
+---
+
+## Problema 6 — Layout do teclado
+
+Durante a utilização do terminal foi necessário ajustar o layout do teclado.
+
+Foi utilizado:
+
+```bash
+setupcon
+```
+
+para aplicar a configuração apropriada no console Linux.
+
+---
+
+# Máquina virtual Ubuntu Server
+
+Depois da configuração do Proxmox foi criada uma máquina virtual para instalação do **Ubuntu Server**.
+
+Informações do laboratório:
+
+```text
+VM ID: 100
+Sistema: Ubuntu Server
+Bridge: vmbr0
+Interface virtual: VirtIO
+```
+
+O hostname utilizado durante os testes foi:
+
+```text
+lab-1
+```
+
+---
+
+## Recursos configurados
+
+Durante a criação da VM foram configurados:
+
+* CPU virtual
+* Memória RAM
+* Disco virtual
+* ISO do Ubuntu Server
+* Interface de rede VirtIO
+* Bridge `vmbr0`
+
+Após a instalação, o Ubuntu Server conseguiu inicializar normalmente dentro do Proxmox.
+
+---
+
+# Estado atual
+
+Atualmente o ambiente possui:
+
+* [x] VirtualBox configurado
+* [x] Proxmox VE instalado
+* [x] Virtualização aninhada funcionando
+* [x] Interface Web do Proxmox acessível
+* [x] Proxmox conectado à rede utilizando Bridge
+* [x] Bridge `vmbr0` configurada
+* [x] Máquina virtual criada
+* [x] Ubuntu Server instalado
+* [x] Ubuntu Server inicializando pelo disco virtual
+* [x] Interface VirtIO configurada na VM
+* [ ] Acesso do Ubuntu Server à Internet
+
+---
+
+# Pendência atual — conectividade do Ubuntu Server
+
+A principal pendência do projeto atualmente está relacionada à rede da máquina virtual Ubuntu Server.
+
+O Proxmox possui acesso pela rede e sua interface Web funciona normalmente, porém a conectividade externa da VM ainda precisa ser solucionada.
+
+O próximo troubleshooting será realizado verificando diferentes camadas da configuração.
+
+---
+
+## Verificar a interface de rede
+
+```bash
+ip a
+```
+
+Esse comando permite verificar:
+
+* interfaces existentes;
+* endereço IP;
+* estado da interface;
+* máscara de rede.
+
+---
+
+## Verificar as rotas
 
 ```bash
 ip route
 ```
 
+O objetivo é confirmar principalmente a existência de uma rota padrão:
+
+```text
+default via GATEWAY
+```
+
+---
+
+## Testar comunicação com o gateway
+
+```bash
+ping 192.168.1.1
+```
+
+Se funcionar, significa que a VM consegue alcançar o gateway da rede local.
+
+---
+
+## Testar acesso externo sem DNS
+
 ```bash
 ping 8.8.8.8
 ```
+
+Se esse teste funcionar, mas nomes de domínio não funcionarem, o problema provavelmente estará relacionado ao DNS.
+
+---
+
+## Testar DNS
 
 ```bash
 ping google.com
 ```
 
+Também podem ser verificadas as configurações utilizando:
+
 ```bash
 resolvectl status
 ```
 
-A solução encontrada será documentada futuramente neste repositório.
-
 ---
 
-## Próximas etapas
+## Pontos que ainda serão analisados
 
-Como evolução do laboratório, pretendo implementar:
-
-* [ ] Resolver o acesso do Ubuntu Server à Internet
-* [ ] Configurar endereço IP estático
-* [ ] Configurar autenticação SSH utilizando chaves
-* [ ] Desativar autenticação SSH por senha
-* [ ] Configurar firewall utilizando UFW
-* [ ] Implementar Fail2ban
-* [ ] Analisar logs de autenticação
-* [ ] Criar snapshots da máquina virtual
-* [ ] Configurar backup da VM
-* [ ] Realizar testes de restauração
-* [ ] Implementar monitoramento básico do servidor
-
----
-
-## Conhecimentos praticados
-
-### Virtualização
-
-* Conceito de hypervisor
-* Criação de máquinas virtuais
-* Configuração de recursos
-* Administração através do Proxmox VE
-
-### Linux
-
-* Instalação do Ubuntu Server
-* Administração pelo terminal
-* Gerenciamento básico do sistema
-* Administração remota
-
-### Redes
-
-* Endereçamento IP
-* Comunicação entre dispositivos
-* Testes de conectividade
-* Portas e protocolos
+* Endereço IP do Ubuntu Server
+* Máscara de rede
 * Gateway
 * DNS
-* Troubleshooting de rede
-
-### Infraestrutura
-
-* Administração de servidores
-* Virtualização
-* Acesso remoto
-* Gerenciamento de máquinas virtuais
-* Diagnóstico de problemas
+* Configuração da `vmbr0`
+* Interface VirtIO
+* Netplan do Ubuntu
+* Rotas de rede
+* Configuração da bridge no VirtualBox
+* Comunicação VM → Proxmox → rede física
 
 ---
 
-## Status do projeto
+# Próximas etapas
+
+Depois de solucionar a conectividade, pretendo continuar evoluindo o laboratório.
+
+### Rede
+
+* [ ] Resolver acesso à Internet
+* [ ] Configurar IP estático
+* [ ] Validar gateway
+* [ ] Configurar DNS
+* [ ] Documentar a solução do problema
+
+### Administração Linux
+
+* [ ] Criar usuário administrativo
+* [ ] Configurar acesso SSH
+* [ ] Configurar autenticação utilizando chave SSH
+* [ ] Revisar permissões e usuários
+
+### Segurança
+
+* [ ] Configurar UFW
+* [ ] Liberar apenas portas necessárias
+* [ ] Configurar Fail2ban
+* [ ] Analisar logs de autenticação
+
+### Proxmox
+
+* [ ] Criar snapshots
+* [ ] Configurar backup da VM
+* [ ] Testar restauração
+* [ ] Monitorar utilização de CPU, memória e armazenamento
+
+---
+
+# Conhecimentos praticados
+
+Durante o projeto foram praticados conceitos relacionados a:
+
+## Virtualização
+
+* Hypervisores
+* Máquinas virtuais
+* Virtualização aninhada
+* KVM
+* Alocação de recursos
+* VirtIO
+
+## Proxmox
+
+* Instalação do Proxmox VE
+* Interface administrativa Web
+* Criação e gerenciamento de VMs
+* Configuração de bridge
+* Gerenciamento de discos e ISOs
+* Console de máquinas virtuais
+* Troubleshooting de VMs
+
+## Linux
+
+* Ubuntu Server
+* Terminal Linux
+* Configuração básica do sistema
+* Interfaces de rede
+* Rotas
+* Diagnóstico de conectividade
+
+## Redes
+
+* NAT
+* Bridge
+* Endereçamento IPv4
+* Gateway
+* DNS
+* Interfaces virtuais
+* Troubleshooting de conectividade
+
+---
+
+# O que aprendi com o projeto
+
+Além da instalação das ferramentas, o laboratório permitiu entender melhor como diferentes camadas de virtualização e rede se relacionam.
+
+Um dos principais aprendizados foi a diferença prática entre utilizar **NAT e Bridge** em uma máquina virtual.
+
+Também foi possível entender melhor como funciona a virtualização aninhada, já que o ambiente utiliza:
+
+```text
+VirtualBox
+    ↓
+Proxmox VE
+    ↓
+Ubuntu Server
+```
+
+Os problemas encontrados durante a configuração também foram importantes para praticar troubleshooting em vez de simplesmente seguir uma instalação pronta.
+
+O projeto ainda não está finalizado e continuará sendo atualizado conforme novas configurações forem implementadas e os problemas restantes forem solucionados.
+
+---
+
+## Status
 
 🚧 **Em desenvolvimento**
 
-O ambiente principal já está funcional, incluindo Proxmox VE, Ubuntu Server, comunicação local e acesso via SSH.
+### Próximo objetivo
 
-A próxima etapa do projeto será solucionar a conectividade externa da máquina virtual e adicionar novas configurações relacionadas à segurança, backup e administração do servidor.
+> Resolver a conectividade com a Internet da VM Ubuntu Server e documentar a causa e a solução encontrada.
 
 ---
 
@@ -302,4 +539,4 @@ A próxima etapa do projeto será solucionar a conectividade externa da máquina
 
 **Luiz Batista**
 
-Estudante de Ciência da Computação e Técnico em Informática, com foco em **Infraestrutura, Redes, Linux e Segurança da Informação**.
+Estudante de Ciência da Computação e Técnico em Informática, com foco em infraestrutura, redes, Linux e segurança da informação.
